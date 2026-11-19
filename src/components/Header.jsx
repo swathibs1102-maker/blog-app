@@ -1,18 +1,30 @@
-function Header({ blogName, links }) {
+function Header({ blogName, links, view, onNavigate }) {
+  // "Home" stays highlighted on the post detail view too
+  function isActive(link) {
+    if (link === 'Write') return view === 'write'
+    if (link === 'Home') return view === 'home' || view === 'post'
+    return false
+  }
+
   return (
     <header className="header">
-      <a href="#" className="logo">
+      <button
+        type="button"
+        className="logo"
+        onClick={() => onNavigate('Home')}
+      >
         Dev<span>Diary</span>
-      </a>
+      </button>
       <nav className="nav">
-        {links.map((link, index) => (
-          <a
+        {links.map((link) => (
+          <button
             key={link}
-            href="#"
-            className={index === 0 ? 'nav-link active' : 'nav-link'}
+            type="button"
+            className={isActive(link) ? 'nav-link active' : 'nav-link'}
+            onClick={() => onNavigate(link)}
           >
             {link}
-          </a>
+          </button>
         ))}
       </nav>
     </header>

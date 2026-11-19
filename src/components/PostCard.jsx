@@ -1,4 +1,5 @@
 function PostCard({
+  id,
   emoji,
   bg,
   tag,
@@ -9,6 +10,9 @@ function PostCard({
   avatarColor,
   date,
   likes,
+  liked,
+  onToggleLike,
+  onReadMore,
 }) {
   return (
     <article className="post-card">
@@ -29,11 +33,22 @@ function PostCard({
               <p className="post-date">{date}</p>
             </div>
           </div>
-          <span className="likes">❤️ {likes}</span>
+          <button
+            type="button"
+            className="like-btn"
+            onClick={() => onToggleLike(id)}
+            aria-label={liked ? 'Unlike' : 'Like'}
+          >
+            {liked ? '❤️' : '🤍'} {likes}
+          </button>
         </div>
-        <a href="#" className="read-more">
+        <button
+          type="button"
+          className="read-more"
+          onClick={() => onReadMore(id)}
+        >
           Read more →
-        </a>
+        </button>
       </div>
     </article>
   )
