@@ -1,13 +1,18 @@
-function TagFilter({ tags }) {
+function TagFilter({ tags, activeTag, onTagSelect }) {
   return (
     <div className="tag-filter">
-      {tags.map((tag, index) => (
+      {tags.map((tag) => (
         <button
           key={tag}
           type="button"
-          className={index === 0 ? 'tag-btn active' : 'tag-btn'}
+          className={
+            tag.toLowerCase() === activeTag.toLowerCase()
+              ? 'tag-btn active'
+              : 'tag-btn'
+          }
+          onClick={() => onTagSelect(tag)}
         >
-          {tag}
+          {tag === 'All' ? tag : tag.charAt(0).toUpperCase() + tag.slice(1)}
         </button>
       ))}
     </div>

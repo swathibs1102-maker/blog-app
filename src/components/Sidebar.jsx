@@ -1,13 +1,20 @@
-function Sidebar({ popularTags, topAuthors }) {
+function Sidebar({ popularTags, topAuthors, activeTag, onTagSelect }) {
   return (
     <aside className="sidebar">
       <section className="side-card">
         <h2>Popular tags</h2>
         <div className="chips">
           {popularTags.map((tag) => (
-            <span key={tag} className="chip">
+            <button
+              key={tag}
+              type="button"
+              className={
+                tag === activeTag.toLowerCase() ? 'chip active' : 'chip'
+              }
+              onClick={() => onTagSelect(tag)}
+            >
               #{tag}
-            </span>
+            </button>
           ))}
         </div>
       </section>
@@ -17,15 +24,12 @@ function Sidebar({ popularTags, topAuthors }) {
         <ul className="authors">
           {topAuthors.map((a) => (
             <li key={a.name} className="author">
-              <span
-                className="avatar avatar-lg"
-                style={{ backgroundColor: a.avatarColor }}
-              >
-                {a.initials}
-              </span>
+              <img className="avatar avatar-lg" src={a.image} alt="" />
               <div>
                 <p className="author-name">{a.name}</p>
-                <p className="post-date">{a.posts} posts</p>
+                <p className="post-date">
+                  {a.posts} {a.posts === 1 ? 'post' : 'posts'}
+                </p>
               </div>
             </li>
           ))}
