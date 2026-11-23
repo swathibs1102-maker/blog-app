@@ -1,30 +1,23 @@
-function Header({ blogName, links, view, onNavigate }) {
-  // "Home" stays highlighted on the post detail view too
-  function isActive(link) {
-    if (link === 'Write') return view === 'write'
-    if (link === 'Home') return view === 'home' || view === 'post'
-    return false
-  }
+import { NavLink, Link } from 'react-router-dom'
+
+function Header({ blogName = 'DevDiary', links = ['Home', 'Write', 'About'] }) {
+  const paths = { Home: '/', Write: '/write', About: '/about' }
 
   return (
     <header className="header">
-      <button
-        type="button"
-        className="logo"
-        onClick={() => onNavigate('Home')}
-      >
+      <Link to="/" className="logo" aria-label={`${blogName} home`}>
         Dev<span>Diary</span>
-      </button>
+      </Link>
       <nav className="nav">
         {links.map((link) => (
-          <button
+          <NavLink
             key={link}
-            type="button"
-            className={isActive(link) ? 'nav-link active' : 'nav-link'}
-            onClick={() => onNavigate(link)}
+            to={paths[link] || '/'}
+            end={link === 'Home'}
+            className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
           >
             {link}
-          </button>
+          </NavLink>
         ))}
       </nav>
     </header>
