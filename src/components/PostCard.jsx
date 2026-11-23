@@ -1,54 +1,41 @@
-function PostCard({
-  id,
-  emoji,
-  bg,
-  tag,
-  title,
-  summary,
-  author,
-  initials,
-  avatarColor,
-  date,
-  likes,
-  liked,
-  onToggleLike,
-  onReadMore,
-}) {
+import { Link } from 'react-router-dom'
+
+function PostCard({ post, onToggleLike }) {
+  const preview = post.body.length > 100 ? `${post.body.slice(0, 100)}…` : post.body
+
   return (
     <article className="post-card">
-      <div className="post-image" style={{ backgroundColor: bg }}>
-        {emoji}
-      </div>
+      <div className="post-image">📝</div>
       <div className="post-body">
-        <span className="post-tag">{tag}</span>
-        <h3>{title}</h3>
-        <p className="post-summary">{summary}</p>
+        <div className="post-tags">
+          {post.tags.map((tag) => (
+            <span className="post-tag" key={tag}>{tag}</span>
+          ))}
+        </div>
+        <h3>{post.title}</h3>
+        <p className="post-summary">{preview}</p>
         <div className="post-meta">
           <div className="author">
-            <span className="avatar" style={{ backgroundColor: avatarColor }}>
-              {initials}
-            </span>
+            {post.authorPhoto ? (
+              <img className="avatar" src={post.authorPhoto} alt="" />
+            ) : (
+              <span className="avatar">{post.initials}</span>
+            )}
             <div>
-              <p className="author-name">{author}</p>
-              <p className="post-date">{date}</p>
+              <p className="author-name">{post.author}</p>
+              <p className="post-date">{post.date || 'DummyJSON post'}</p>
             </div>
           </div>
           <button
             type="button"
             className="like-btn"
-            onClick={() => onToggleLike(id)}
-            aria-label={liked ? 'Unlike' : 'Like'}
+            onClick={() => onToggleLike(post.id, post.likes, post.liked)}
+            aria-label={post.liked ? 'Unlike' : 'Like'}
           >
-            {liked ? '❤️' : '🤍'} {likes}
+            {post.liked ? '❤️' : '🤍'} {post.likes}
           </button>
         </div>
-        <button
-          type="button"
-          className="read-more"
-          onClick={() => onReadMore(id)}
-        >
-          Read more →
-        </button>
+        <Link className="read-more" to={`/post/${post.id}`}>Read more →</Link>
       </div>
     </article>
   )

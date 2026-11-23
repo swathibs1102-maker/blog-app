@@ -7,7 +7,7 @@ function FeaturedPost({ emoji, title, summary, author, date, readTime }) {
         <h1>{title}</h1>
         <p className="featured-summary">{summary}</p>
         <p className="featured-meta">
-          By {author} · {date} · {readTime} min read
+          By {author || 'DevDiary team'} · {date} · {readTime} min read
         </p>
       </div>
     </section>

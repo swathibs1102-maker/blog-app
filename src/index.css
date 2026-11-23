@@ -140,6 +140,8 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
   border-radius: 999px;
   margin-bottom: 10px;
 }
+.post-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.post-tags .post-tag { margin-bottom: 10px; }
 .post-body h3 { font-family: var(--serif); font-size: 24px; line-height: 1.3; margin-bottom: 6px; }
 .post-summary { color: var(--muted); font-size: 16px; margin-bottom: 16px; }
 .post-meta {
@@ -167,6 +169,7 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  object-fit: cover;
 }
 .avatar-lg { width: 44px; height: 44px; }
 .author-name { font-weight: 600; font-size: 16px; line-height: 1.3; }
@@ -236,6 +239,12 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
 .detail-title { font-family: var(--serif); font-size: 38px; line-height: 1.25; margin: 12px 0 18px; }
 .detail-meta { margin-top: 0; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
 .detail-content { font-size: 18px; line-height: 1.8; white-space: pre-line; margin-top: 24px; }
+.status-message { margin: 28px 0; color: var(--muted); font-size: 17px; }
+.error-message { color: #b91c1c; }
+.comments { margin-top: 36px; }
+.comments h2 { font-family: var(--serif); font-size: 26px; margin-bottom: 18px; }
+.comment { padding: 18px 0; border-top: 1px solid var(--line); }
+.comment p + p { color: var(--muted); margin-top: 6px; }
 
 /* Write form */
 .write-form { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
@@ -256,6 +265,32 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
 .write-form select:focus { border-color: var(--accent); }
 .write-form textarea { resize: vertical; }
 .form-row { display: flex; gap: 20px; }
+.tag-options {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 1px solid #d6d6d6;
+  border-radius: 12px;
+}
+.tag-options legend { padding: 0 4px; font-size: 15px; font-weight: 500; }
+.write-form .tag-options .tag-option {
+  flex: 0 0 auto;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.write-form .tag-options input {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  accent-color: var(--accent);
+}
 .form-error { color: #b91c1c; font-size: 15px; }
 .publish-btn {
   align-self: flex-start;
@@ -267,6 +302,7 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
   border-radius: 999px;
 }
 .publish-btn:hover { background: #cf4a23; }
+.publish-btn:disabled { cursor: not-allowed; opacity: 0.65; }
 
 /* Tablet */
 @media (max-width: 1100px) {
@@ -287,4 +323,20 @@ button { font-family: inherit; cursor: pointer; background: none; border: none; 
   .search-box { width: 100%; min-width: 0; }
   .form-row { flex-direction: column; }
   .detail-title { font-size: 28px; }
+}
+
+
+/* Phase 4: route pages and author links */
+.author-link { color: inherit; text-decoration: none; }
+.author-link:hover { color: var(--accent); }
+.author-label { color: var(--accent); font-size: 13px; font-weight: 700; letter-spacing: .12em; margin-bottom: 8px; }
+.tag-page-heading { margin: 10px 0 24px; }
+.author-profile { display: flex; align-items: center; gap: 28px; padding: 30px; border: 1px solid var(--line); border-radius: 20px; margin-bottom: 36px; }
+.author-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.author-posts-title { font-family: var(--serif); font-size: 28px; margin: 0 0 22px; }
+.not-found, .about-page { max-width: 760px; margin: 40px auto; text-align: center; }
+.not-found .read-more { display: inline-block; margin-top: 12px; }
+@media (max-width: 700px) {
+  .author-profile { flex-direction: column; text-align: center; padding: 24px; }
+  .author-photo { width: 100px; height: 100px; }
 }

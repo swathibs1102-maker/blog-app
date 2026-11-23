@@ -1,20 +1,19 @@
-function Sidebar({ popularTags, topAuthors, activeTag, onTagSelect }) {
+import { NavLink, Link } from 'react-router-dom'
+
+function Sidebar({ popularTags, topAuthors }) {
   return (
     <aside className="sidebar">
       <section className="side-card">
         <h2>Popular tags</h2>
         <div className="chips">
           {popularTags.map((tag) => (
-            <button
+            <NavLink
               key={tag}
-              type="button"
-              className={
-                tag === activeTag.toLowerCase() ? 'chip active' : 'chip'
-              }
-              onClick={() => onTagSelect(tag)}
+              to={`/tag/${encodeURIComponent(tag.toLowerCase())}`}
+              className={({ isActive }) => isActive ? 'chip active' : 'chip'}
             >
               #{tag}
-            </button>
+            </NavLink>
           ))}
         </div>
       </section>
@@ -23,18 +22,11 @@ function Sidebar({ popularTags, topAuthors, activeTag, onTagSelect }) {
         <h2>Top authors</h2>
         <ul className="authors">
           {topAuthors.map((a) => (
-            <li key={a.name} className="author">
-              <span
-                className="avatar avatar-lg"
-                style={{ backgroundColor: a.avatarColor }}
-              >
-                {a.initials}
-              </span>
+            <li key={a.id} className="author">
+              <img className="avatar avatar-lg" src={a.image} alt="" />
               <div>
-                <p className="author-name">{a.name}</p>
-                <p className="post-date">
-                  {a.posts} {a.posts === 1 ? 'post' : 'posts'}
-                </p>
+                <Link className="author-name author-link" to={`/author/${a.id}`}>{a.name}</Link>
+                <p className="post-date">{a.posts} {a.posts === 1 ? 'post' : 'posts'}</p>
               </div>
             </li>
           ))}
