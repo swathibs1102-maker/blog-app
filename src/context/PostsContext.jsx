@@ -87,11 +87,11 @@ export function PostsProvider({ children }) {
     const content = form.content.trim()
     const author = getAuthorName(user)
     const newPost = {
-      id: Date.now(),
+      id: form.id ?? Date.now(),
       userId: Number(form.userId),
       title,
       body: content,
-      summary: content.slice(0, 100),
+      summary: form.summary.trim() || content.slice(0, 100),
       tags: form.tags.map((tag) => tag.toLowerCase()),
       author,
       authorPhoto: user.image || '',

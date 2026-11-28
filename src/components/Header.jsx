@@ -4,17 +4,17 @@ function Header({ blogName = 'DevDiary', links = ['Home', 'Write', 'About'] }) {
   const paths = { Home: '/', Write: '/write', About: '/about' }
 
   return (
-    <header className="header">
-      <Link to="/" className="logo" aria-label={`${blogName} home`}>
-        Dev<span>Diary</span>
+    <header className="flex items-center justify-between border-b border-line px-16 py-[18px] max-[1100px]:px-8 max-[700px]:px-5 max-[700px]:py-4">
+      <Link to="/" className="p-0 font-serif text-[28px] font-bold" aria-label={`${blogName} home`}>
+        Dev<span className="text-accent">Diary</span>
       </Link>
-      <nav className="nav">
+      <nav className="flex gap-9 max-[700px]:gap-5">
         {links.map((link) => (
           <NavLink
             key={link}
             to={paths[link] || '/'}
             end={link === 'Home'}
-            className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+            className={({ isActive }) => `p-0 text-[17px] ${isActive ? 'font-semibold text-accent' : 'text-muted hover:text-ink'}`}
           >
             {link}
           </NavLink>

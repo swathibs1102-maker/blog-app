@@ -15,21 +15,21 @@ import { usePosts } from './context/PostsContext'
 
 function NotFound() {
   return (
-    <section className="not-found">
-      <p className="author-label">404 · PAGE NOT FOUND</p>
-      <h1 className="detail-title">Oops! This page doesn't exist.</h1>
-      <p className="post-summary">The link may be broken, or the page may have moved.</p>
-      <a href="/" className="read-more">← Back to Home</a>
+    <section className="mx-auto my-10 max-w-[760px] text-center">
+      <p className="mb-2 text-[13px] font-bold tracking-[.12em] text-accent">404 · PAGE NOT FOUND</p>
+      <h1 className="mt-3 mb-[18px] font-serif text-[38px] leading-[1.25] max-[700px]:text-[28px]">Oops! This page doesn't exist.</h1>
+      <p className="mb-4 text-base text-muted">The link may be broken, or the page may have moved.</p>
+      <a href="/" className="mt-3 inline-block self-start p-0 text-base font-semibold text-accent hover:underline">← Back to Home</a>
     </section>
   )
 }
 
 function AboutPage() {
   return (
-    <section className="about-page">
-      <p className="author-label">ABOUT DEVDIARY</p>
-      <h1 className="detail-title">Written by trainees, for trainees.</h1>
-      <p className="detail-content">DevDiary is a place to share coding learnings, beginner-friendly tips, and stories from the developer journey.</p>
+    <section className="mx-auto my-10 max-w-[760px] text-center">
+      <p className="mb-2 text-[13px] font-bold tracking-[.12em] text-accent">ABOUT DEVDIARY</p>
+      <h1 className="mt-3 mb-[18px] font-serif text-[38px] leading-[1.25] max-[700px]:text-[28px]">Written by trainees, for trainees.</h1>
+      <p className="mt-6 whitespace-pre-line text-lg leading-[1.8]">DevDiary is a place to share coding learnings, beginner-friendly tips, and stories from the developer journey.</p>
     </section>
   )
 }
@@ -57,16 +57,16 @@ function HomeFeed({ tagRoute = false }) {
   return (
     <>
       {!tagRoute && <FeaturedPost emoji={featured.emoji} title={featured.title} summary={featured.summary} author={featured.author} date={featured.date} readTime={featured.readTime} />}
-      {tagRoute && <div className="tag-page-heading"><p className="author-label">TAG</p><h1 className="detail-title">#{activeTag}</h1></div>}
-      {loading && <p className="status-message">Loading posts and authors…</p>}
-      {error && <p className="status-message error-message">{error}</p>}
+      {tagRoute && <div className="mt-[10px] mb-6"><p className="mb-2 text-[13px] font-bold tracking-[.12em] text-accent">TAG</p><h1 className="mt-3 mb-[18px] font-serif text-[38px] leading-[1.25] max-[700px]:text-[28px]">#{activeTag}</h1></div>}
+      {loading && <p className="my-7 text-[17px] text-muted">Loading posts and authors…</p>}
+      {error && <p className="my-7 text-[17px] text-red-700">{error}</p>}
       {!loading && !error && (
         <>
-          <div className="filter-bar">
+          <div className="mt-9 mb-7 flex flex-wrap items-center justify-between gap-4">
             <TagFilter tags={tagsForFilter} activeTag={activeTag} />
             <SearchBox value={search} onChange={setSearch} />
           </div>
-          <div className="layout">
+          <div className="grid grid-cols-[1fr_380px] items-start gap-8 max-[1100px]:grid-cols-1">
             <PostGrid posts={visiblePosts} emptyText={emptyText} />
             <Sidebar popularTags={popularTags} topAuthors={topAuthors} />
           </div>
@@ -80,7 +80,7 @@ function App() {
   return (
     <>
       <Header blogName="DevDiary" links={['Home', 'Write', 'About']} />
-      <main className="container">
+      <main className="mx-auto max-w-[1500px] px-16 pt-10 pb-[60px] max-[1100px]:px-8 max-[700px]:px-5 max-[700px]:pt-6 max-[700px]:pb-10">
         <Routes>
           <Route path="/" element={<HomeFeed />} />
           <Route path="/post/:id" element={<PostDetail />} />

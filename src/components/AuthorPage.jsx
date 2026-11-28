@@ -30,22 +30,22 @@ function AuthorPage() {
   const error = userError || postsError
 
   return (
-    <section className="author-page">
-      {loading && <p className="status-message">Loading author…</p>}
-      {error && <p className="status-message error-message">Unable to load author: {error}</p>}
+    <section>
+      {loading && <p className="my-7 text-[17px] text-muted">Loading author…</p>}
+      {error && <p className="my-7 text-[17px] text-red-700">Unable to load author: {error}</p>}
       {user && !error && (
         <>
-          <div className="author-profile">
-            <img src={user.image} alt={`${user.firstName} ${user.lastName}`} className="author-photo" />
+          <div className="mb-9 flex items-center gap-7 rounded-[20px] border border-line p-[30px] max-[700px]:flex-col max-[700px]:p-6 max-[700px]:text-center">
+            <img src={user.image} alt={`${user.firstName} ${user.lastName}`} className="h-[120px] w-[120px] shrink-0 rounded-full object-cover max-[700px]:h-[100px] max-[700px]:w-[100px]" />
             <div>
-              <p className="author-label">AUTHOR PROFILE</p>
-              <h1 className="detail-title">{user.firstName} {user.lastName}</h1>
-              <p className="post-summary">@{user.username} · {posts.length} posts</p>
-              <p className="post-summary">{user.company?.title || 'Blog contributor'}</p>
-              <Link to="/" className="read-more">← Back to blog</Link>
+              <p className="mb-2 text-[13px] font-bold tracking-[.12em] text-accent">AUTHOR PROFILE</p>
+              <h1 className="mt-3 mb-[18px] font-serif text-[38px] leading-[1.25] max-[700px]:text-[28px]">{user.firstName} {user.lastName}</h1>
+              <p className="mb-4 text-base text-muted">@{user.username} · {posts.length} posts</p>
+              <p className="mb-4 text-base text-muted">{user.company?.title || 'Blog contributor'}</p>
+              <Link to="/" className="self-start p-0 text-base font-semibold text-accent hover:underline">← Back to blog</Link>
             </div>
           </div>
-          <h2 className="author-posts-title">Posts by {user.firstName}</h2>
+                    <h2 className="mb-[22px] font-serif text-[28px]">Posts by {user.firstName}</h2>
           <PostGrid posts={posts} emptyText="This author has no posts." />
         </>
       )}
