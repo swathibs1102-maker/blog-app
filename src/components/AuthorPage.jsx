@@ -1,60 +1,39 @@
-import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import PostGrid from './PostGrid'
+import { usePosts } from '../context/PostsContext'
+import useFetch from '../hooks/useFetch'
 
-async function fetchJson(url) {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`Request failed (${response.status})`)
-  return response.json()
-}
-
-function AuthorPage({ likeOverrides, onToggleLike }) {
+function AuthorPage() {
   const { id } = useParams()
-  const [user, setUser] = useState(null)
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { posts: sharedPosts, likeOverrides } = usePosts()
+  const { data: user, loading: userLoading, error: userError } = useFetch(`https://dummyjson.com/users/${id}`)
+  const { data: postData, loading: postsLoading, error: postsError } = useFetch(`https://dummyjson.com/posts/user/${id}`)
 
-  useEffect(() => {
-    let active = true
-    setUser(null)
-    setPosts([])
-    setLoading(true)
-    setError('')
-    Promise.all([
-      fetchJson(`https://dummyjson.com/users/${id}`),
-      fetchJson(`https://dummyjson.com/posts/user/${id}`),
-    ])
-      .then(([userData, postData]) => {
-        if (!active) return
-        setUser(userData)
-        setPosts((postData.posts || []).map((post) => ({
-          ...post,
-          body: post.body || '',
-          summary: post.body || '',
-          author: `${userData.firstName} ${userData.lastName}`,
-          authorPhoto: userData.image,
-          initials: `${userData.firstName?.[0] || ''}${userData.lastName?.[0] || ''}`,
-          date: 'DummyJSON post',
-          likes: post.reactions?.likes || 0,
-          liked: false,
-        })))
-      })
-      .catch((err) => { if (active) setError(`Unable to load author: ${err.message}`) })
-      .finally(() => { if (active) setLoading(false) })
-    return () => { active = false }
-  }, [id])
+  const posts = (postData?.posts || []).map((post) => {
+    const sharedPost = sharedPosts.find((item) => String(item.id) === String(post.id))
+    const authorName = user ? `${user.firstName} ${user.lastName}` : 'Unknown author'
+    return {
+      ...post,
+      body: post.body || '',
+      summary: post.body || '',
+      tags: post.tags || [],
+      author: authorName,
+      authorPhoto: user?.image || '',
+      initials: `${user?.firstName?.[0] || ''}${user?.lastName?.[0] || ''}`,
+      date: 'DummyJSON post',
+      likes: likeOverrides[post.id]?.likes ?? sharedPost?.likes ?? post.reactions?.likes ?? 0,
+      liked: likeOverrides[post.id]?.liked ?? sharedPost?.liked ?? false,
+    }
+  })
 
-  const visiblePosts = posts.map((post) => ({
-    ...post,
-    ...(likeOverrides[post.id] || {}),
-  }))
+  const loading = userLoading || postsLoading
+  const error = userError || postsError
 
   return (
     <section className="author-page">
       {loading && <p className="status-message">Loading author…</p>}
-      {error && <p className="status-message error-message">{error}</p>}
-      {user && (
+      {error && <p className="status-message error-message">Unable to load author: {error}</p>}
+      {user && !error && (
         <>
           <div className="author-profile">
             <img src={user.image} alt={`${user.firstName} ${user.lastName}`} className="author-photo" />
@@ -67,7 +46,7 @@ function AuthorPage({ likeOverrides, onToggleLike }) {
             </div>
           </div>
           <h2 className="author-posts-title">Posts by {user.firstName}</h2>
-          <PostGrid posts={visiblePosts} emptyText="This author has no posts." onToggleLike={onToggleLike} />
+          <PostGrid posts={posts} emptyText="This author has no posts." />
         </>
       )}
     </section>

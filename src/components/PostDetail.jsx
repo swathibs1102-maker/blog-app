@@ -1,107 +1,76 @@
-import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { usePosts } from '../context/PostsContext'
+import useFetch from '../hooks/useFetch'
 
-async function fetchJson(url) {
-  const response = await fetch(url)
-  if (!response.ok) throw new Error(`Request failed (${response.status})`)
-  return response.json()
-}
-
-function PostDetail({ likeOverrides = {}, onToggleLike }) {
+function PostDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [post, setPost] = useState(null)
-  const [author, setAuthor] = useState(null)
-  const [comments, setComments] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [commentsLoading, setCommentsLoading] = useState(true)
-  const [commentsError, setCommentsError] = useState('')
+  const { posts, getAuthor, toggleLike, likeOverrides, loading: postsLoading } = usePosts()
+  const contextPost = posts.find((item) => String(item.id) === id)
+  const postRequest = useFetch(contextPost ? '' : `https://dummyjson.com/posts/${id}`)
+  const post = contextPost || postRequest.data
+  const authorFromContext = post ? getAuthor(post.userId) : null
+  const authorRequest = useFetch(post && !authorFromContext ? `https://dummyjson.com/users/${post.userId}` : '')
+  const author = authorFromContext || authorRequest.data
+  const commentsRequest = useFetch(`https://dummyjson.com/posts/${id}/comments`)
+  const comments = commentsRequest.data?.comments || []
 
-  useEffect(() => {
-    let active = true
-    setPost(null)
-    setAuthor(null)
-    setComments([])
-    setLoading(true)
-    setCommentsLoading(true)
-    setError('')
-    setCommentsError('')
+  const likeOverride = post ? likeOverrides[post.id] : null
+  const normalizedPost = post ? {
+    ...post,
+    ...(likeOverride || {}),
+    author: post.author || (author ? `${author.firstName} ${author.lastName}` : 'Unknown author'),
+    authorPhoto: post.authorPhoto || author?.image || '',
+    likes: post.likes ?? post.reactions?.likes ?? 0,
+    liked: Boolean(post.liked),
+    body: post.body || '',
+    tags: post.tags || [],
+  } : null
 
-    fetchJson(`https://dummyjson.com/posts/${id}`)
-      .then(async (data) => {
-        let user = null
-        try {
-          user = await fetchJson(`https://dummyjson.com/users/${data.userId}`)
-        } catch {
-          user = null
-        }
-        if (!active) return
-        setAuthor(user)
-        setPost({
-          ...data,
-          author: user ? `${user.firstName} ${user.lastName}` : 'Unknown author',
-          authorPhoto: user?.image || '',
-          likes: data.reactions?.likes || 0,
-          liked: false,
-        })
-      })
-      .catch((fetchError) => {
-        if (active) setError(`Unable to load this post: ${fetchError.message}`)
-      })
-      .finally(() => {
-        if (active) setLoading(false)
-      })
-
-    fetchJson(`https://dummyjson.com/posts/${id}/comments`)
-      .then((data) => {
-        if (active) setComments(data.comments || [])
-      })
-      .catch((fetchError) => {
-        if (active) setCommentsError(`Unable to load comments: ${fetchError.message}`)
-      })
-      .finally(() => {
-        if (active) setCommentsLoading(false)
-      })
-
-    return () => { active = false }
-  }, [id])
-
-  const override = likeOverrides[id]
-  const likes = override?.likes ?? post?.likes ?? 0
-  const liked = override?.liked ?? post?.liked ?? false
+  const loading = contextPost ? false : (postRequest.loading || postsLoading)
+  const error = postRequest.error
 
   return (
     <article className="detail">
       <button type="button" className="back-btn" onClick={() => navigate(-1)}>← Back</button>
       {loading && <p className="status-message">Loading post…</p>}
-      {error && <p className="status-message error-message">{error}</p>}
+      {error && <p className="status-message error-message">Unable to load this post: {error}</p>}
+      {!loading && !error && !normalizedPost && <p className="status-message">Post not found.</p>}
 
-      {post && (
+      {normalizedPost && (
         <>
           <div className="detail-image">📝</div>
           <div className="post-tags">
-            {post.tags?.map((tag) => <span className="post-tag" key={tag}>{tag}</span>)}
+            {normalizedPost.tags.map((tag) => <span className="post-tag" key={tag}>{tag}</span>)}
           </div>
-          <h1 className="detail-title">{post.title}</h1>
+          <h1 className="detail-title">{normalizedPost.title}</h1>
           <div className="post-meta detail-meta">
             <div className="author">
-              {post.authorPhoto ? <img className="avatar" src={post.authorPhoto} alt="" /> : <span className="avatar">{post.author.slice(0, 2)}</span>}
+              {normalizedPost.authorPhoto
+                ? <img className="avatar" src={normalizedPost.authorPhoto} alt="" />
+                : <span className="avatar">{normalizedPost.author.slice(0, 2)}</span>}
               <div>
-                {author ? <Link className="author-name author-link" to={`/author/${author.id}`}>{post.author}</Link> : <p className="author-name">{post.author}</p>}
+                {author
+                  ? <Link className="author-name author-link" to={`/author/${author.id}`}>{normalizedPost.author}</Link>
+                  : <p className="author-name">{normalizedPost.author}</p>}
                 <p className="post-date">DummyJSON post</p>
               </div>
             </div>
-            <button type="button" className="like-btn" onClick={() => onToggleLike(post.id, likes, liked)} aria-label={liked ? 'Unlike' : 'Like'}>
-              {liked ? '❤️' : '🤍'} {likes}
+            <button
+              type="button"
+              className="like-btn"
+              onClick={() => toggleLike(normalizedPost.id, normalizedPost.likes, normalizedPost.liked)}
+              aria-label={normalizedPost.liked ? 'Unlike' : 'Like'}
+            >
+              {normalizedPost.liked ? '❤️' : '🤍'} {normalizedPost.likes}
             </button>
           </div>
-          <p className="detail-content">{post.body}</p>
+          <p className="detail-content">{normalizedPost.body}</p>
           <section className="comments">
             <h2>Comments</h2>
-            {commentsError && <p className="status-message error-message">{commentsError}</p>}
-            {commentsLoading && <p className="status-message">Loading comments…</p>}
-            {!commentsLoading && !commentsError && comments.length === 0 && <p className="post-summary">No comments yet.</p>}
+            {commentsRequest.error && <p className="status-message error-message">Unable to load comments: {commentsRequest.error}</p>}
+            {commentsRequest.loading && <p className="status-message">Loading comments…</p>}
+            {!commentsRequest.loading && !commentsRequest.error && comments.length === 0 && <p className="post-summary">No comments yet.</p>}
             {comments.map((comment) => (
               <article className="comment" key={comment.id}>
                 <p className="author-name">{comment.user?.fullName || comment.user?.username || 'Reader'}</p>
